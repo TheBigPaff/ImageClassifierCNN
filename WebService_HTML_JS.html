@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Is this a dog or a cat? </title>
+	<style> 
+		*{ 
+			font-size:30px;
+		}
+	</style>
+</head>
+
+<body>
+	<input id="image-selector" type="file">
+	<button id="predict-button">Predict</button>
+	<p style="font-weight:bold">Predictions</p>
+	<p>Dog: <span id="dog-prediction"></span></p>
+	<p>Cat: <span id="cat-prediction"></span></p>
+	<p>The pet is a: <span id="prediction_text"></span></p>
+	<img id="selected-image" src=""/>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script>
+		let base64Image;
+		$("#image-selector").change(function() {
+			let reader = new FileReader();
+			reader.onload = function(e) {
+				let dataURL = reader.result;
+				$('#selected-image').attr("src", dataURL);
+				base64Image = dataURL.replace("data:image/jpeg;base64,","");
+				console.log(base64Image);
+			}
+			reader.readAsDataURL($("#image-selector")[0].files[0]);
+			$("#dog-prediction").text("");
+			$("#cat-prediction").text("");
+			$("#prediction_text").text("");
+		});
+
+		$("#predict-button").click(function(event){
+			let message = {
+				image: base64Image
+			}
+			console.log(message)
+			$.post("http://localhost:5000/predict", JSON.stringify(message), function(response){
+				let dogPrediction = response.prediction.dog.toFixed(6) * 100;
+				let catPrediction = response.prediction.cat.toFixed(6) * 100;
+				$("#dog-prediction").text(dogPrediction + "%");
+				$("#cat-prediction").text(catPrediction + "%");
+				if(dogPrediction > catPrediction){
+					$("#prediction_text").text(" dog!")
+				}
+				else{
+					$("#prediction_text").text(" cat!")
+				}
+				console.log(response);
+			});
+		});
+	</script>
+</body>
+</html>
