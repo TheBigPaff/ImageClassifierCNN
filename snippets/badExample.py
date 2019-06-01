@@ -5,7 +5,7 @@
 # BUILDS AND TRAIN MY OWN CNN
 model = Sequential([
     Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3)),
-    Flatten(),
+    Flatten(), # Flattening a tensor means to remove all of the dimensions except for one. This is exactly what the Flatten layer do.
     Dense(2, activation='softmax')
 ])
 model.compile(Adam(lr=.0001), loss='categorical_crossentropy', metrics=['accuracy'])
